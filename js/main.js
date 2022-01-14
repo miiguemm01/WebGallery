@@ -1,14 +1,14 @@
 const newImageButton = document.getElementById('uploadImage');
 const imageZone = document.getElementById('image-zone');
+const fileInput = document.getElementById('fileInput');
 const userImages = localStorage.getItem('userImages') ? JSON.parse(localStorage.getItem('userImages')) : [];
 
 const loadImages = () => {
     const documentBody = document.getElementsByTagName('body')[0];
-    
+    imageZone.innerHTML = "";
     if(userImages.length > 0) {
-        imageZone.innerHTML = "";
         for(let i = 0; i < userImages.length; i++) {
-            imageZone.innerHTML += `<img src="${userImages[i]}" alt="">`;
+            imageZone.innerHTML += `<img src=${userImages[i]} alt="User Image">`;
             imageZone.classList.remove('noImages');
             imageZone.classList.add('imageZone');
         }
@@ -21,17 +21,17 @@ const loadImages = () => {
 }
 
 newImageButton.addEventListener('click', () => {
-    const fileInput = document.getElementById('fileInput');
     fileInput.click();
-    fileInput.addEventListener('change', () => {
+    fileInput.addEventListener('input', () => {
         const file = fileInput.files[0];
         const fileReader = new FileReader();
         fileReader.readAsDataURL(file);
-        fileReader.addEventListener('load', () => {
+        fileReader.addEventListener('loadend', () => {
             const image = fileReader.result;
-            console.log(image);
-            userImages.push(image);
-            localStorage.setItem('userImages', JSON.stringify(userImages));
+            if(!userImages.includes(image)) {
+                userImages.push(image);
+                localStorage.setItem('userImages', JSON.stringify(userImages));
+            }
             loadImages();
         });
     });
